@@ -3,15 +3,19 @@ function initialize() {
     createSVGStops(stops, true);
     createColorPickers(stops, true);
     attachColorChangeHandlers(stops);
+    handleGradientTypeChange();
 
-    // Initialize slider value displays
-    ['cx', 'cy', 'r', 'fx', 'fy'].forEach(id => {
-        const slider = document.getElementById(id);
-        const valueElement = document.getElementById(`${id}-value`);
-        valueElement.textContent = slider.value;
-    });
+    // Set initial background color and update it when the first color picker changes
+    const firstColorPicker = document.getElementById('color-0');
+    if (firstColorPicker) {
+        document.getElementById('gradient-svg').style.backgroundColor = firstColorPicker.value;
+        firstColorPicker.addEventListener('input', function () {
+            document.getElementById('gradient-svg').style.backgroundColor = this.value;
+        });
+    }
+
+    document.getElementById('color-0').addEventListener('input', setBackgroundColor);
 }
-
 
 function createSVGStops(stops, isInitialLoad) {
     const gradientTypes = ['linear', 'radial'];
@@ -126,9 +130,18 @@ function handleRandomise() {
             // Save color to local storage
             localStorage.setItem(`color-${i}`, randomColor);
         }
+        setBackgroundColor(); // Update the background color after randomizing colors
     });
 }
 
+function setBackgroundColor() {
+    const firstColor = document.getElementById('color-0').value;
+    document.getElementById('gradient-svg').style.backgroundColor = firstColor;
+}
+
+window.onload = initialize;
+
+// The slider handlers and event listeners can be set up outside of the window.onload event:
 handleSliderChange("cx", "cx");
 handleSliderChange("cy", "cy");
 handleSliderChange("r", "r");
@@ -136,7 +149,4 @@ handleSliderChange("fx", "fx");
 handleSliderChange("fy", "fy");
 handleStopsChange();
 handleSpreadChange();
-handleGradientTypeChange();
 handleRandomise();
-
-window.onload = initialize;
