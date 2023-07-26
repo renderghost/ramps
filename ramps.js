@@ -1,17 +1,46 @@
-// Functions to handle changes
-
-function handleChange(id, attribute, target = 'radial-gradient') {
+function handleSliderChange(id, attribute) {
     const element = document.getElementById(id);
     element.addEventListener("input", function () {
-        document.getElementById(target).setAttribute(attribute, `${this.value}%`);
+        const gradientType = document.querySelector('input[name="gradient-type"]:checked').value;
+        document.getElementById(`${gradientType}-gradient`).setAttribute(attribute, `${this.value}%`);
     });
 }
 
 function handleColorChange(index) {
     const element = document.getElementById(`color-${index}`);
     element.addEventListener("input", function () {
-        document.querySelector(`#radial-gradient stop:nth-child(${index + 1})`).style.stopColor = this.value;
-        document.querySelector(`#linear-gradient stop:nth-child(${index + 1})`).style.stopColor = this.value;
+        const gradientType = document.querySelector('input[name="gradient-type"]:checked').value;
+        document.querySelector(`#${gradientType}-gradient stop:nth-child(${index + 1})`).setAttribute('stop-color', this.value);
+    });
+}
+
+function handleStopsChange() {
+    const stopElement = document.getElementById("stops");
+    stopElement.addEventListener("input", function () {
+        const stops = this.value;
+        let stopElements = "";
+        for (let i = 0; i < stops; i++) {
+            stopElements += `<input type="color" id="color-${i}" value="#000000">`;
+        }
+        document.getElementById("color-picker").innerHTML = stopElements;
+
+        const gradientTypes = ['linear', 'radial'];
+        gradientTypes.forEach(gradientType => {
+            const gradient = document.getElementById(`${gradientType}-gradient`);
+            while (gradient.firstChild) {
+                gradient.firstChild.remove();
+            }
+            for (let i = 0; i < stops; i++) {
+                const stop = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+                stop.setAttribute('offset', `${(i / (stops - 1)) * 100}%`);
+                stop.setAttribute('stop-color', '#000000');
+                gradient.appendChild(stop);
+            }
+        });
+
+        for (let i = 0; i < stops; i++) {
+            handleColorChange(i);
+        }
     });
 }
 
@@ -34,8 +63,6 @@ function handleGradientTypeChange() {
     });
 }
 
-// Function to generate random color
-
 function getRandomColor() {
     const letters = '0123456789ABCDEF';
     let color = '#';
@@ -45,58 +72,25 @@ function getRandomColor() {
     return color;
 }
 
-handleChange("cx", "cx");
-handleChange("cy", "cy");
-handleChange("r", "r");
-handleChange("fx", "fx");
-handleChange("fy", "fy");
+function handleRandomise() {
+    const randomiseElement = document.getElementById("randomise");
+    randomiseElement.addEventListener("click", function () {
+        const stops = document.getElementById("stops").value;
+        for (let i = 0; i < stops; i++) {
+            const randomColor = getRandomColor();
+            document.getElementById(`color-${i}`).value = randomColor;
+            const gradientType = document.querySelector('input[name="gradient-type"]:checked').value;
+            document.querySelector(`#${gradientType}-gradient stop:nth-child(${i + 1})`).setAttribute('stop-color', randomColor);
+        }
+    });
+}
+
+handleSliderChange("cx", "cx");
+handleSliderChange("cy", "cy");
+handleSliderChange("r", "r");
+handleSliderChange("fx", "fx");
+handleSliderChange("fy", "fy");
+handleStopsChange();
 handleSpreadChange();
 handleGradientTypeChange();
-
-// Handle stop change
-
-const stopElement = document.getElementById("stops");
-const colorPickerElement = document.getElementById("color-picker");
-
-stopElement.addEventListener("input", function () {
-    const stops = this.value;
-    let stopElements = "";
-
-    for (let i = 0; i < stops; i++) {
-        const stopColor = getRandomColor();
-        stopElements += `<input type="color" id="color-${i}" value="${stopColor}">`;
-        document.querySelector(`#radial-gradient stop:nth-child(${i + 1})`).style.stopColor = stopColor;
-        document.querySelector(`#linear-gradient stop:nth-child(${i + 1})`).style.stopColor = stopColor;
-    }
-
-    colorPickerElement.innerHTML = stopElements;
-
-    for (let i = 0; i < stops; i++) {
-        handleColorChange(i);
-    }
-});
-
-// Handle direction change
-
-const directionElement = document.getElementById("direction");
-
-directionElement.addEventListener("input", function () {
-    const angle = this.value;
-    document.getElementById("linear-gradient").setAttribute("x2", `${Math.cos(angle * Math.PI / 180) * 100}%`);
-    document.getElementById("linear-gradient").setAttribute("y2", `${Math.sin(angle * Math.PI / 180) * 100}%`);
-});
-
-// Handle randomise button click
-
-const randomiseElement = document.getElementById("randomise");
-
-randomiseElement.addEventListener("click", function () {
-    const stops = document.getElementById("stops").value;
-
-    for (let i = 0; i < stops; i++) {
-        const randomColor = getRandomColor();
-        document.getElementById(`color-${i}`).value = randomColor;
-        document.querySelector(`#radial-gradient stop:nth-child(${i + 1})`).style.stopColor = randomColor;
-        document.querySelector(`#linear-gradient stop:nth-child(${i + 1})`).style.stopColor = randomColor;
-    }
-});
+handleRandomise();
