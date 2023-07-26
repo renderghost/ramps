@@ -50,13 +50,13 @@
     <aside>
         <div>
             <label>
-                <input type="radio" name="spread" value="pad" checked> Pad
+                <input type="radio" name="spread" value="pad"> Pad
             </label>
             <label>
                 <input type="radio" name="spread" value="reflect"> Reflect
             </label>
             <label>
-                <input type="radio" name="spread" value="repeat"> Repeat
+                <input type="radio" name="spread" value="repeat" checked> Repeat
             </label>
         </div>
         <div>
@@ -69,30 +69,37 @@
         </div>
         <label>
             Direction
+            <span id="direction-value"></span>
             <input type="range" min="0" max="359" value="0" id="direction" disabled>
         </label>
         <label>
             CX
+            <span id="cx-value"></span>
             <input type="range" min="0" max="100" value="50" id="cx">
         </label>
         <label>
             CY
+            <span id="cy-value"></span>
             <input type="range" min="0" max="100" value="50" id="cy">
         </label>
         <label>
             R
+            <span id="r-value"></span>
             <input type="range" min="0" max="100" value="50" id="r">
         </label>
         <label>
             FX
+            <span id="fx-value"></span>
             <input type="range" min="0" max="100" value="50" id="fx">
         </label>
         <label>
             FY
+            <span id="fy-value"></span>
             <input type="range" min="0" max="100" value="50" id="fy">
         </label>
         <label>
             Stops
+            <span id="stops-value"></span>
             <input type="range" min="2" max="7" value="2" id="stops">
         </label>
 

@@ -3,7 +3,15 @@ function initialize() {
     createSVGStops(stops, true);
     createColorPickers(stops, true);
     attachColorChangeHandlers(stops);
+
+    // Initialize slider value displays
+    ['cx', 'cy', 'r', 'fx', 'fy'].forEach(id => {
+        const slider = document.getElementById(id);
+        const valueElement = document.getElementById(`${id}-value`);
+        valueElement.textContent = slider.value;
+    });
 }
+
 
 function createSVGStops(stops, isInitialLoad) {
     const gradientTypes = ['linear', 'radial'];
@@ -48,9 +56,12 @@ function attachColorChangeHandlers(stops) {
 
 function handleSliderChange(id, attribute) {
     const element = document.getElementById(id);
+    const valueElement = document.getElementById(`${id}-value`);
     element.addEventListener("input", function () {
         const gradientType = document.querySelector('input[name="gradient-type"]:checked').value;
         document.getElementById(`${gradientType}-gradient`).setAttribute(attribute, `${this.value}%`);
+        // Update the value in the corresponding HTML element
+        valueElement.textContent = this.value;
     });
 }
 
