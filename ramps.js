@@ -4,7 +4,6 @@ function initialize() {
     createColorPickers(stops, true);
     attachColorChangeHandlers(stops);
 
-    // Initialize slider value displays
     ['cx', 'cy', 'r', 'fx', 'fy'].forEach(id => {
         const slider = document.getElementById(id);
         const valueElement = document.getElementById(`${id}-value`);
@@ -12,24 +11,18 @@ function initialize() {
     });
 }
 
-
 function createSVGStops(stops, isInitialLoad) {
-    const gradientTypes = ['linear', 'radial'];
-    gradientTypes.forEach(gradientType => {
-        const gradient = document.getElementById(`${gradientType}-gradient`);
-        // Clear existing children
-        while (gradient.firstChild) {
-            gradient.firstChild.remove();
-        }
-        // Create stops
-        for (let i = 0; i < stops; i++) {
-            const stop = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-            stop.setAttribute('offset', `${(i / (stops - 1)) * 100}%`);
-            const color = localStorage.getItem(`color-${i}`) || '#000000';
-            stop.setAttribute('stop-color', color);
-            gradient.appendChild(stop);
-        }
-    });
+    const gradient = document.getElementById("radial-gradient");
+    while (gradient.firstChild) {
+        gradient.firstChild.remove();
+    }
+    for (let i = 0; i < stops; i++) {
+        const stop = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+        stop.setAttribute('offset', `${(i / (stops - 1)) * 100}%`);
+        const color = localStorage.getItem(`color-${i}`) || '#000000';
+        stop.setAttribute('stop-color', color);
+        gradient.appendChild(stop);
+    }
 }
 
 function createColorPickers(stops, isInitialLoad) {
@@ -54,23 +47,21 @@ function attachColorChangeHandlers(stops) {
     }
 }
 
-function handleSliderChange(id, attribute) {
+function handleAttributeSliderChange(id, attribute) {
     const element = document.getElementById(id);
     const valueElement = document.getElementById(`${id}-value`);
     element.addEventListener("input", function () {
-        const gradientType = document.querySelector('input[name="gradient-type"]:checked').value;
-        document.getElementById(`${gradientType}-gradient`).setAttribute(attribute, `${this.value}%`);
-        // Update the value in the corresponding HTML element
+        document.getElementById("radial-gradient").setAttribute(attribute, `${this.value}%`);
         valueElement.textContent = this.value;
     });
 }
 
 function handleColorChange(index) {
     const element = document.getElementById(`color-${index}`);
+    const stopElement = document.querySelector(`#radial-gradient stop:nth-child(${index + 1})`);
     element.addEventListener("input", function () {
-        const gradientType = document.querySelector('input[name="gradient-type"]:checked').value;
-        document.querySelector(`#${gradientType}-gradient stop:nth-child(${index + 1})`).setAttribute('stop-color', this.value);
-        localStorage.setItem(`color-${index}`, this.value); // store the color in local storage
+        stopElement.setAttribute('stop-color', this.value);
+        localStorage.setItem(`color-${index}`, this.value);
     });
 }
 
@@ -88,55 +79,70 @@ function handleSpreadChange() {
     document.querySelectorAll("input[name=spread]").forEach((item) => {
         item.addEventListener("change", function () {
             document.getElementById("radial-gradient").setAttribute("spreadMethod", this.value);
-            document.getElementById("linear-gradient").setAttribute("spreadMethod", this.value);
         });
     });
+
+    // set initial value based on checked radio button
+    const initialValue = document.querySelector('input[name="spread"]:checked').value;
+    document.getElementById("radial-gradient").setAttribute("spreadMethod", initialValue);
 }
 
-function handleGradientTypeChange() {
-    document.querySelectorAll("input[name=gradient-type]").forEach((item) => {
-        item.addEventListener("change", function () {
-            document.getElementById("circle").style.fill = this.value === 'radial' ? "url(#radial-gradient)" : "none";
-            document.getElementById("rectangle").style.fill = this.value === 'linear' ? "url(#linear-gradient)" : "none";
-            document.getElementById("direction").disabled = this.value === 'radial';
-        });
-    });
-}
 
 function getRandomColor() {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
+    return '#' + Math.random().toString(16).slice(2, 8).toUpperCase();
 }
 
 function handleRandomise() {
-    const randomiseElement = document.getElementById("randomise");
-    randomiseElement.addEventListener("click", function () {
+    const randomiseButton = document.getElementById('randomise');
+    randomiseButton.addEventListener('click', function () {
         const stops = document.getElementById("stops").value;
         for (let i = 0; i < stops; i++) {
             const randomColor = getRandomColor();
-            // Update color picker
-            document.getElementById(`color-${i}`).value = randomColor;
-            // Update gradient stop
-            const gradientType = document.querySelector('input[name="gradient-type"]:checked').value;
-            document.querySelector(`#${gradientType}-gradient stop:nth-child(${i + 1})`).setAttribute('stop-color', randomColor);
-            // Save color to local storage
+            const colorElement = document.getElementById(`color-${i}`);
+            colorElement.value = randomColor;
+            const stopElement = document.querySelector(`#radial-gradient stop:nth-child(${i + 1})`);
+            stopElement.setAttribute('stop-color', randomColor);
             localStorage.setItem(`color-${i}`, randomColor);
         }
     });
 }
 
-handleSliderChange("cx", "cx");
-handleSliderChange("cy", "cy");
-handleSliderChange("r", "r");
-handleSliderChange("fx", "fx");
-handleSliderChange("fy", "fy");
-handleStopsChange();
-handleSpreadChange();
-handleGradientTypeChange();
-handleRandomise();
+function handleGradientSkewChange() {
+    const skewX = document.getElementById('skewX');
+    const skewY = document.getElementById('skewY');
+    const skewXValue = document.getElementById('skewX-value');
+    const skewYValue = document.getElementById('skewY-value');
+    skewXValue.textContent = skewX.value;
+    skewYValue.textContent = skewY.value;
 
-window.onload = initialize;
+    skewX.addEventListener('input', function () {
+        skewXValue.textContent = this.value;
+        setGradientSkew(this.value, skewY.value);
+    });
+
+    skewY.addEventListener('input', function () {
+        skewYValue.textContent = this.value;
+        setGradientSkew(skewX.value, this.value);
+    });
+}
+
+function setGradientSkew(x, y) {
+    const gradient = document.getElementById('radial-gradient');
+    gradient.setAttribute('gradientTransform', `skewX(${x}) skewY(${y})`);
+}
+
+
+window.onload = function () {
+    initialize();
+    handleRandomise();
+    handleAttributeSliderChange("cx", "cx");
+    handleAttributeSliderChange("cy", "cy");
+    handleAttributeSliderChange("fx", "fx");
+    handleAttributeSliderChange("fy", "fy");
+    handleAttributeSliderChange("r", "r");
+    handleSpreadChange();
+    handleStopsChange();
+    handleGradientSkewChange();
+};
+
+

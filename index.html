@@ -2,29 +2,47 @@
 <html>
 
 <head>
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/type.css" />
+    <link rel="stylesheet" href="css/input.css" />
+    <link rel="stylesheet" href="css/feedback.css" />
+    <link rel="stylesheet" href="css/media.css" />
+    <link rel="stylesheet" href="css/utility.css" />
+    <link rel="stylesheet" href="css/special.css" />
     <style>
         body {
             display: flex;
             justify-content: space-around;
+            justify-content: center;
             align-items: center;
             height: 100vh;
+            max-height: 100%;
             margin: 0;
             background: #eee;
         }
 
         main {
-            flex: 3;
+            flex: 2;
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100vh;
+            max-height: 100%;
         }
 
         aside {
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            padding: 20px;
+            justify-content: center;
+            align-items: left;
+            gap: 1rem;
+            padding: 2rem;
+            height: 100vh;
+            max-height: 100%;
         }
     </style>
 </head>
@@ -37,17 +55,18 @@
                     <stop offset="0%" style="stop-color: red" />
                     <stop offset="100%" style="stop-color: blue" />
                 </radialGradient>
-                <linearGradient id="linear-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" style="stop-color: red" />
-                    <stop offset="100%" style="stop-color: blue" />
-                </linearGradient>
             </defs>
             <circle id="circle" cx="100" cy="100" r="80" fill="url(#radial-gradient)" />
-            <rect id="rectangle" x="50" y="50" width="100" height="100" fill="url(#linear-gradient)"
-                visibility="hidden" />
         </svg>
     </main>
     <aside>
+        <label>
+            Stops
+            <span id="stops-value"></span>
+            <input type="range" min="2" max="7" value="2" id="stops">
+        </label>
+        <div id="color-picker"></div>
+        <button id="randomise">Randomise Colors</button>
         <div>
             <label>
                 <input type="radio" name="spread" value="pad"> Pad
@@ -59,18 +78,15 @@
                 <input type="radio" name="spread" value="repeat" checked> Repeat
             </label>
         </div>
-        <div>
-            <label>
-                <input type="radio" name="gradient-type" value="radial" checked> Radial
-            </label>
-            <label>
-                <input type="radio" name="gradient-type" value="linear"> Linear
-            </label>
-        </div>
         <label>
-            Direction
-            <span id="direction-value"></span>
-            <input type="range" min="0" max="359" value="0" id="direction" disabled>
+            Skew X
+            <span id="skewX-value"></span>
+            <input type="range" id="skewX" min="-90" max="90" step="1" value="0">
+        </label>
+        <label>
+            Skew Y
+            <span id="skewY-value"></span>
+            <input type="range" id="skewY" min="-90" max="90" step="1" value="0">
         </label>
         <label>
             CX
@@ -97,13 +113,6 @@
             <span id="fy-value"></span>
             <input type="range" min="0" max="100" value="50" id="fy">
         </label>
-        <label>
-            Stops
-            <span id="stops-value"></span>
-            <input type="range" min="2" max="7" value="2" id="stops">
-        </label>
-        <div id="color-picker"></div>
-        <button id="randomise">Randomise Colors</button>
     </aside>
 
     <script src="ramps.js"></script>

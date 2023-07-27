@@ -1,0 +1,85 @@
+/* Colours */
+:root {
+    /* Core */
+    --s-mono-100: hsl(236, 100%, 100%);
+    --s-mono-98: hsl(236, 100%, 98%);
+    --s-mono-96: hsl(236, 24%, 96%);
+    --s-mono-84: hsl(236, 24%, 84%);
+    --s-mono-76: hsl(236, 16%, 76%);
+    --s-mono-62: hsl(236, 16%, 62%);
+    --s-mono-38: hsl(236, 16%, 38%);
+    --s-mono-24: hsl(236, 16%, 24%);
+    --s-mono-0: hsl(236, 16%, 0%);
+    --s-blue-dark-2: hsl(236, 100%, 17%);
+    --s-blue-dark-1: hsl(236, 100%, 35%);
+    --s-blue: hsl(236, 100%, 50%);
+    /* --s-blue-bright-1: ;
+    --s-blue-bright-2: ; */
+    --s-yellow: #fbb800;
+    /* Applied */
+    --c-bg: var(--s-mono-100);
+    --c-bg-sec: var(--s-mono-98);
+    --c-bg-tri: var(--s-mono-84);
+    --c-bg-quad: var(--s-mono-76);
+    --c-link-primary: var(--s-blue-dark-1);
+    --c-link-primary-hover: var(--s-blue);
+    --c-link-primary-active: var(--s-blue-dark-2);
+    --c-link-secondary: var(--s-blue-dark-1);
+    --c-link-secondary-hover: var(--s-blue);
+    --c-link-secondary-active: var(--s-blue-dark-1);
+    --c-shadow: #f4f4f4;
+    --c-text: var(--s-mono-0);
+    --c-text-inverted: var(--s-mono-100);
+    --c-text-secondary: var(--s-mono-38);
+    --c-text-secondary-inverted: var(--s-mono-76);
+    --c-border:var(--s-mono-76);
+    --c-highlight: var(--s-yellow);
+    --box-shadow: 2px 2px 10px;
+}
+
+/* Layout */
+:root {
+    /* Align */
+    --justify-important: center;
+    --justify-normal: left;
+    /* Sizes */
+    --width-card: 285px;
+    --width-card-medium: 460px;
+    --width-card-wide: 800px;
+    --width-content: 1044px;
+    --width-max: 100%;
+    /* Spaces */
+    --gap-sx: 0.25rem;
+    --gap-s: 0.5rem;
+    --gap: 1rem;
+    --gap-l: 1.5rem;
+    --gap-lx: 2rem;
+    --gap-lxx: 4rem;
+    /* Shapes */
+    --border-radius: 3px;
+    --border-radius-circle: 100%;
+}
+
+/* Typography */
+:root {
+    /* Family */
+    --font-sans: 'DM Sans', sans-serif;
+    --font-serif: 'DM Serif Display', serif;
+    /* Font Sizes */
+    --font-size-html: 18px;
+    --font-size-sxx: 0.5rem;
+    --font-size-sx: 0.625rem;
+    --font-size-s: 0.75rem;
+    --font-size: 1rem;
+    --font-size-l: 1.25rem;
+    --font-size-lx: 1.5rem;
+    --font-size-lxx: 2rem;
+    --font-size-lxxx: 2.5rem;
+    --font-size-lxxxx: 2.75rem;
+    --font-size-lxxxxx: 3rem;
+    /* Line Height */
+    --line-height-none: 1;
+    --line-height-compact: 1.2;
+    --line-height-comfortable: 1.4;
+    --line-height-spacious: 1.6;
+}
