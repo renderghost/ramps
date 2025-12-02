@@ -1,5 +1,8 @@
 function updateBackgroundColor(color) {
-    document.body.style.background = color;
+    const backgroundCircle = document.getElementById('background-circle');
+    if (backgroundCircle) {
+        backgroundCircle.setAttribute('fill', color);
+    }
 }
 
 function initialize() {
