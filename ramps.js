@@ -4,6 +4,14 @@ function updateBackgroundColor(color) {
 
 function initialize() {
     const stops = document.getElementById("stops").value;
+
+    // Generate colors FIRST if they don't exist
+    for (let i = 0; i < stops; i++) {
+        if (!localStorage.getItem(`color-${i}`)) {
+            localStorage.setItem(`color-${i}`, getRandomColor());
+        }
+    }
+
     createSVGStops(stops, true);
     createColorPickers(stops, true);
     attachColorChangeHandlers(stops);
@@ -14,8 +22,11 @@ function initialize() {
         valueElement.textContent = slider.value;
     });
 
+    // Update stops-value display
+    document.getElementById('stops-value').textContent = stops;
+
     // Set background to first color
-    const firstColor = localStorage.getItem('color-0') || '#000000';
+    const firstColor = localStorage.getItem('color-0');
     updateBackgroundColor(firstColor);
 }
 
@@ -27,7 +38,7 @@ function createSVGStops(stops, isInitialLoad) {
     for (let i = 0; i < stops; i++) {
         const stop = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
         stop.setAttribute('offset', `${(i / (stops - 1)) * 100}%`);
-        const color = localStorage.getItem(`color-${i}`) || '#000000';
+        const color = localStorage.getItem(`color-${i}`);
         stop.setAttribute('stop-color', color);
         gradient.appendChild(stop);
     }
@@ -36,12 +47,10 @@ function createSVGStops(stops, isInitialLoad) {
 function createColorPickers(stops, isInitialLoad) {
     let stopElements = "";
     for (let i = 0; i < stops; i++) {
-        let color;
-        if (isInitialLoad) {
+        let color = localStorage.getItem(`color-${i}`);
+        if (!color) {
             color = getRandomColor();
             localStorage.setItem(`color-${i}`, color);
-        } else {
-            color = localStorage.getItem(`color-${i}`) || '#000000';
         }
         stopElements += `<input type="color" id="color-${i}" value="${color}">`;
     }
@@ -49,7 +58,7 @@ function createColorPickers(stops, isInitialLoad) {
     colorPickerContainer.innerHTML = stopElements;
 
     // Update background to first color
-    const firstColor = localStorage.getItem('color-0') || '#000000';
+    const firstColor = localStorage.getItem('color-0');
     updateBackgroundColor(firstColor);
 }
 
@@ -83,8 +92,10 @@ function handleColorChange(index) {
 
 function handleStopsChange() {
     const stopElement = document.getElementById("stops");
+    const valueElement = document.getElementById('stops-value');
     stopElement.addEventListener("input", function () {
         const stops = this.value;
+        valueElement.textContent = stops;
         createSVGStops(stops, false);
         createColorPickers(stops, false);
         attachColorChangeHandlers(stops);
@@ -105,7 +116,12 @@ function handleSpreadChange() {
 
 
 function getRandomColor() {
-    return '#' + Math.random().toString(16).slice(2, 8).toUpperCase();
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
 }
 
 function handleRandomise() {
