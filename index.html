@@ -229,6 +229,81 @@
 
                     <div class="group">
                         <div class="field-row">
+                            <label class="field-label" for="rotate">Rotation</label>
+                            <input class="value-input" type="number" id="rotate-number" min="-180" max="180" step="1"
+                                value="0" aria-label="Rotation value">
+                            <div class="slider-wrap">
+                                <input class="slider" type="range" id="rotate" min="-180" max="180" step="1" value="0">
+                                <span class="slider-tooltip" id="rotate-tooltip">0</span>
+                            </div>
+                            <button type="button" class="button lock-button" id="lock-rotate" data-lock="rotate"
+                                aria-pressed="false" aria-label="Lock Rotation">
+                                <svg class="icon icon-unlocked" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+                                    focusable="false">
+                                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+                                </svg>
+                                <svg class="icon icon-locked" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+                                    focusable="false">
+                                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="field-row">
+                            <label class="field-label" for="scaleX">Scale X</label>
+                            <input class="value-input" type="number" id="scaleX-number" min="10" max="300" step="1"
+                                value="100" aria-label="Scale X value">
+                            <div class="slider-wrap">
+                                <input class="slider" type="range" id="scaleX" min="10" max="300" step="1" value="100">
+                                <span class="slider-tooltip" id="scaleX-tooltip">100</span>
+                            </div>
+                            <button type="button" class="button lock-button" id="lock-scaleX" data-lock="scaleX"
+                                aria-pressed="false" aria-label="Lock Scale X">
+                                <svg class="icon icon-unlocked" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+                                    focusable="false">
+                                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+                                </svg>
+                                <svg class="icon icon-locked" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+                                    focusable="false">
+                                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="field-row">
+                            <label class="field-label" for="scaleY">Scale Y</label>
+                            <input class="value-input" type="number" id="scaleY-number" min="10" max="300" step="1"
+                                value="100" aria-label="Scale Y value">
+                            <div class="slider-wrap">
+                                <input class="slider" type="range" id="scaleY" min="10" max="300" step="1" value="100">
+                                <span class="slider-tooltip" id="scaleY-tooltip">100</span>
+                            </div>
+                            <button type="button" class="button lock-button" id="lock-scaleY" data-lock="scaleY"
+                                aria-pressed="false" aria-label="Lock Scale Y">
+                                <svg class="icon icon-unlocked" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+                                    focusable="false">
+                                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+                                </svg>
+                                <svg class="icon icon-locked" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+                                    focusable="false">
+                                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="group">
+                        <div class="field-row">
                             <label class="field-label" for="cx">Centre X</label>
                             <input class="value-input" type="number" id="cx-number" min="0" max="100" step="1"
                                 value="50" aria-label="Centre X value">
@@ -327,6 +402,30 @@
                                 </svg>
                             </button>
                         </div>
+                        <div class="field-row">
+                            <label class="field-label" for="fr">Focal Radius</label>
+                            <input class="value-input" type="number" id="fr-number" min="0" max="100" step="1"
+                                value="0" aria-label="Focal Radius value">
+                            <div class="slider-wrap">
+                                <input class="slider" type="range" id="fr" min="0" max="100" step="1" value="0">
+                                <span class="slider-tooltip" id="fr-tooltip">0</span>
+                            </div>
+                            <button type="button" class="button lock-button" id="lock-fr" data-lock="fr"
+                                aria-pressed="false" aria-label="Lock Focal Radius">
+                                <svg class="icon icon-unlocked" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+                                    focusable="false">
+                                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+                                </svg>
+                                <svg class="icon icon-locked" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+                                    focusable="false">
+                                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -357,7 +456,7 @@
         <div class="result">
             <svg id="gradient-svg" class="result__shape" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                    <radialGradient id="radial-gradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%"
+                    <radialGradient id="radial-gradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%" fr="0%"
                         spreadMethod="repeat">
                         <stop offset="0%" style="stop-color: red" />
                         <stop offset="100%" style="stop-color: blue" />

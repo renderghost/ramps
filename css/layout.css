@@ -9,8 +9,8 @@
 .panel {
     display: flex;
     flex-direction: column;
-    gap: var(--space-lg);
-    padding: var(--space-xl) var(--space-8xl);
+    gap: var(--space-base);
+    padding: var(--space-lg) var(--space-xl);
     overflow-y: auto;
     max-height: 100vh;
 }
@@ -18,13 +18,13 @@
 .panel__header {
     display: flex;
     flex-direction: column;
-    gap: var(--space-base);
+    gap: var(--space-sm);
 }
 
 .panel__section {
     display: flex;
     flex-direction: column;
-    gap: var(--space-base);
+    gap: var(--space-sm);
 }
 
 .button-row {
@@ -36,7 +36,7 @@
 .sliders {
     display: flex;
     flex-direction: column;
-    gap: var(--space-sm);
+    gap: var(--space-xs);
 }
 
 .radios {

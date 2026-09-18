@@ -3,11 +3,15 @@ const FORM_DEFAULTS = {
     spread: 'repeat',
     skewX: 0,
     skewY: 0,
+    rotate: 0,
+    scaleX: 100,
+    scaleY: 100,
     cx: 50,
     cy: 50,
     r: 50,
     fx: 50,
     fy: 50,
+    fr: 0,
 };
 
 function clamp(value, min, max) {
@@ -87,9 +91,15 @@ function wireRangeControl(id, onChange) {
     };
 }
 
-function setGradientSkew(x, y) {
+function updateGradientTransform() {
     const gradient = document.getElementById('radial-gradient');
-    gradient.setAttribute('gradientTransform', `skewX(${x}) skewY(${y})`);
+    const skewX = document.getElementById('skewX').value;
+    const skewY = document.getElementById('skewY').value;
+    const rotate = document.getElementById('rotate').value;
+    const scaleX = Number(document.getElementById('scaleX').value) / 100;
+    const scaleY = Number(document.getElementById('scaleY').value) / 100;
+    gradient.setAttribute('gradientTransform',
+        `rotate(${rotate}) skewX(${skewX}) skewY(${skewY}) scale(${scaleX}, ${scaleY})`);
 }
 
 function loadFormState() {
@@ -106,7 +116,7 @@ function saveFormState(state) {
 }
 
 const LOCKS_KEY = 'ramps-locks';
-const LOCKABLE_IDS = ['stops', 'palette', 'spread', 'r', 'skewX', 'skewY', 'cx', 'cy', 'fx', 'fy'];
+const LOCKABLE_IDS = ['stops', 'palette', 'spread', 'r', 'skewX', 'skewY', 'rotate', 'scaleX', 'scaleY', 'cx', 'cy', 'fx', 'fy', 'fr'];
 
 function loadLocks() {
     const defaults = Object.fromEntries(LOCKABLE_IDS.map((id) => [id, false]));
@@ -328,11 +338,15 @@ function collectFormState() {
         spread: document.querySelector('input[name="spread"]:checked').value,
         skewX: Number(document.getElementById('skewX').value),
         skewY: Number(document.getElementById('skewY').value),
+        rotate: Number(document.getElementById('rotate').value),
+        scaleX: Number(document.getElementById('scaleX').value),
+        scaleY: Number(document.getElementById('scaleY').value),
         cx: Number(document.getElementById('cx').value),
         cy: Number(document.getElementById('cy').value),
         r: Number(document.getElementById('r').value),
         fx: Number(document.getElementById('fx').value),
         fy: Number(document.getElementById('fy').value),
+        fr: Number(document.getElementById('fr').value),
     };
 }
 
@@ -342,8 +356,12 @@ function applyFormState(state, controls) {
     controls.r.set(state.r);
     controls.fx.set(state.fx);
     controls.fy.set(state.fy);
+    controls.fr.set(state.fr);
     controls.skewX.set(state.skewX);
     controls.skewY.set(state.skewY);
+    controls.rotate.set(state.rotate);
+    controls.scaleX.set(state.scaleX);
+    controls.scaleY.set(state.scaleY);
 
     const gradient = document.getElementById('radial-gradient');
     gradient.setAttribute('cx', `${state.cx}%`);
@@ -351,8 +369,9 @@ function applyFormState(state, controls) {
     gradient.setAttribute('r', `${state.r}%`);
     gradient.setAttribute('fx', `${state.fx}%`);
     gradient.setAttribute('fy', `${state.fy}%`);
+    gradient.setAttribute('fr', `${state.fr}%`);
     gradient.setAttribute('spreadMethod', state.spread);
-    setGradientSkew(state.skewX, state.skewY);
+    updateGradientTransform();
 
     const radio = document.querySelector(`input[name="spread"][value="${state.spread}"]`);
     if (radio) radio.checked = true;
@@ -367,14 +386,12 @@ function handleGradientControls() {
         r: wireRangeControl('r', (value) => { gradient.setAttribute('r', `${value}%`); saveFormState(collectFormState()); }),
         fx: wireRangeControl('fx', (value) => { gradient.setAttribute('fx', `${value}%`); saveFormState(collectFormState()); }),
         fy: wireRangeControl('fy', (value) => { gradient.setAttribute('fy', `${value}%`); saveFormState(collectFormState()); }),
-        skewX: wireRangeControl('skewX', () => {
-            setGradientSkew(document.getElementById('skewX').value, document.getElementById('skewY').value);
-            saveFormState(collectFormState());
-        }),
-        skewY: wireRangeControl('skewY', () => {
-            setGradientSkew(document.getElementById('skewX').value, document.getElementById('skewY').value);
-            saveFormState(collectFormState());
-        }),
+        fr: wireRangeControl('fr', (value) => { gradient.setAttribute('fr', `${value}%`); saveFormState(collectFormState()); }),
+        skewX: wireRangeControl('skewX', () => { updateGradientTransform(); saveFormState(collectFormState()); }),
+        skewY: wireRangeControl('skewY', () => { updateGradientTransform(); saveFormState(collectFormState()); }),
+        rotate: wireRangeControl('rotate', () => { updateGradientTransform(); saveFormState(collectFormState()); }),
+        scaleX: wireRangeControl('scaleX', () => { updateGradientTransform(); saveFormState(collectFormState()); }),
+        scaleY: wireRangeControl('scaleY', () => { updateGradientTransform(); saveFormState(collectFormState()); }),
     };
 
     const savedState = loadFormState();
@@ -404,11 +421,15 @@ function handleRandomiseSliders(controls) {
             spread: locks.spread ? current.spread : spreadMethods[Math.floor(Math.random() * spreadMethods.length)],
             skewX: locks.skewX ? current.skewX : Math.floor(Math.random() * 181) - 90,
             skewY: locks.skewY ? current.skewY : Math.floor(Math.random() * 181) - 90,
+            rotate: locks.rotate ? current.rotate : Math.floor(Math.random() * 361) - 180,
+            scaleX: locks.scaleX ? current.scaleX : Math.floor(Math.random() * 291) + 10,
+            scaleY: locks.scaleY ? current.scaleY : Math.floor(Math.random() * 291) + 10,
             cx: locks.cx ? current.cx : Math.floor(Math.random() * 101),
             cy: locks.cy ? current.cy : Math.floor(Math.random() * 101),
             r: locks.r ? current.r : Math.floor(Math.random() * 101),
             fx: locks.fx ? current.fx : Math.floor(Math.random() * 101),
             fy: locks.fy ? current.fy : Math.floor(Math.random() * 101),
+            fr: locks.fr ? current.fr : Math.floor(Math.random() * 101),
         };
 
         applyFormState(randomState, controls);
