@@ -46,13 +46,55 @@
 
 .field-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 2fr);
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 2fr) auto;
     align-items: center;
     gap: var(--space-base);
 }
 
 .field-row--wide {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto;
+}
+
+/* Lock button — disables a control and excludes it from randomisation */
+
+.lock-button {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.lock-button .icon-locked {
+    display: none;
+}
+
+.lock-button[aria-pressed="true"] .icon-unlocked {
+    display: none;
+}
+
+.lock-button[aria-pressed="true"] .icon-locked {
+    display: block;
+}
+
+.lock-button[aria-pressed="true"] {
+    background: var(--color-text);
+    color: var(--color-text-inverse);
+    border-color: var(--color-text);
+}
+
+.lock-button[aria-pressed="true"]:hover {
+    opacity: 0.9;
+}
+
+/* Disabled state for locked controls */
+
+.slider:disabled,
+.value-input:disabled,
+.radio-option:has(input:disabled),
+.palette input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 /* Numeric value entry next to each slider */

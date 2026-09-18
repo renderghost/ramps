@@ -105,6 +105,58 @@ function saveFormState(state) {
     localStorage.setItem(FORM_STATE_KEY, JSON.stringify(state));
 }
 
+const LOCKS_KEY = 'ramps-locks';
+const LOCKABLE_IDS = ['stops', 'palette', 'spread', 'r', 'skewX', 'skewY', 'cx', 'cy', 'fx', 'fy'];
+
+function loadLocks() {
+    const defaults = Object.fromEntries(LOCKABLE_IDS.map((id) => [id, false]));
+    try {
+        return { ...defaults, ...JSON.parse(localStorage.getItem(LOCKS_KEY)) };
+    } catch {
+        return defaults;
+    }
+}
+
+function saveLocks(locks) {
+    localStorage.setItem(LOCKS_KEY, JSON.stringify(locks));
+}
+
+function setControlDisabled(id, disabled) {
+    if (id === 'palette') {
+        document.querySelectorAll('#color-picker input[type="color"]').forEach((el) => { el.disabled = disabled; });
+        return;
+    }
+    if (id === 'spread') {
+        document.querySelectorAll('input[name="spread"]').forEach((el) => { el.disabled = disabled; });
+        return;
+    }
+    const range = document.getElementById(id);
+    const number = document.getElementById(`${id}-number`);
+    if (range) range.disabled = disabled;
+    if (number) number.disabled = disabled;
+}
+
+function applyLockState(id, locked) {
+    const button = document.getElementById(`lock-${id}`);
+    if (button) button.setAttribute('aria-pressed', locked);
+    setControlDisabled(id, locked);
+}
+
+function handleLocks() {
+    const locks = loadLocks();
+    LOCKABLE_IDS.forEach((id) => applyLockState(id, locks[id]));
+
+    document.querySelectorAll('.lock-button').forEach((button) => {
+        button.addEventListener('click', function () {
+            const id = this.dataset.lock;
+            const currentLocks = loadLocks();
+            currentLocks[id] = !currentLocks[id];
+            saveLocks(currentLocks);
+            applyLockState(id, currentLocks[id]);
+        });
+    });
+}
+
 function updateBackgroundColor(color) {
     const backgroundCircle = document.getElementById('background-circle');
     if (backgroundCircle) {
@@ -155,6 +207,7 @@ function createColorPickers(stops) {
     }
     const colorPickerContainer = document.getElementById("color-picker");
     colorPickerContainer.innerHTML = stopElements;
+    setControlDisabled('palette', loadLocks().palette);
 
     const firstColor = localStorage.getItem('color-0');
     updateBackgroundColor(firstColor);
@@ -207,6 +260,7 @@ function getRandomColor() {
 function handleRandomise() {
     const randomiseButton = document.getElementById('randomise');
     randomiseButton.addEventListener('click', function () {
+        if (loadLocks().palette) return;
         const stops = document.getElementById("stops").value;
         for (let i = 0; i < stops; i++) {
             const randomColor = getRandomColor();
@@ -331,23 +385,30 @@ function handleGradientControls() {
 
 function handleResetSliders(controls) {
     document.getElementById('reset-sliders').addEventListener('click', function () {
-        applyFormState(FORM_DEFAULTS, controls);
-        saveFormState(FORM_DEFAULTS);
+        const locks = loadLocks();
+        const current = collectFormState();
+        const nextState = Object.fromEntries(
+            Object.keys(FORM_DEFAULTS).map((key) => [key, locks[key] ? current[key] : FORM_DEFAULTS[key]])
+        );
+        applyFormState(nextState, controls);
+        saveFormState(nextState);
     });
 }
 
 function handleRandomiseSliders(controls) {
     document.getElementById('randomise-sliders').addEventListener('click', function () {
+        const locks = loadLocks();
+        const current = collectFormState();
         const spreadMethods = ['pad', 'reflect', 'repeat'];
         const randomState = {
-            spread: spreadMethods[Math.floor(Math.random() * spreadMethods.length)],
-            skewX: Math.floor(Math.random() * 181) - 90,
-            skewY: Math.floor(Math.random() * 181) - 90,
-            cx: Math.floor(Math.random() * 101),
-            cy: Math.floor(Math.random() * 101),
-            r: Math.floor(Math.random() * 101),
-            fx: Math.floor(Math.random() * 101),
-            fy: Math.floor(Math.random() * 101),
+            spread: locks.spread ? current.spread : spreadMethods[Math.floor(Math.random() * spreadMethods.length)],
+            skewX: locks.skewX ? current.skewX : Math.floor(Math.random() * 181) - 90,
+            skewY: locks.skewY ? current.skewY : Math.floor(Math.random() * 181) - 90,
+            cx: locks.cx ? current.cx : Math.floor(Math.random() * 101),
+            cy: locks.cy ? current.cy : Math.floor(Math.random() * 101),
+            r: locks.r ? current.r : Math.floor(Math.random() * 101),
+            fx: locks.fx ? current.fx : Math.floor(Math.random() * 101),
+            fy: locks.fy ? current.fy : Math.floor(Math.random() * 101),
         };
 
         applyFormState(randomState, controls);
@@ -365,4 +426,5 @@ window.onload = function () {
     const controls = handleGradientControls();
     handleResetSliders(controls);
     handleRandomiseSliders(controls);
+    handleLocks();
 };
