@@ -1,5 +1,6 @@
 const FORM_STATE_KEY = 'ramps-form-state';
 const FORM_DEFAULTS = {
+    type: 'radial',
     spread: 'repeat',
     skewX: 0,
     skewY: 0,
@@ -12,6 +13,10 @@ const FORM_DEFAULTS = {
     fx: 50,
     fy: 50,
     fr: 0,
+    startX: 0,
+    startY: 50,
+    endX: 100,
+    endY: 50,
 };
 
 function clamp(value, min, max) {
@@ -102,6 +107,23 @@ function updateGradientTransform() {
         `rotate(${rotate}) skewX(${skewX}) skewY(${skewY}) scale(${scaleX}, ${scaleY})`);
 }
 
+function updateGradientVisibility(type) {
+    const circle = document.getElementById('circle');
+    circle.setAttribute('fill', type === 'linear' ? 'url(#linear-gradient)' : 'url(#radial-gradient)');
+    document.querySelectorAll('.group[data-type]').forEach((group) => {
+        group.hidden = group.dataset.type !== type;
+    });
+}
+
+function handleGradientType() {
+    document.querySelectorAll('input[name="gradient-type"]').forEach((item) => {
+        item.addEventListener('change', function () {
+            updateGradientVisibility(this.value);
+            saveFormState(collectFormState());
+        });
+    });
+}
+
 function loadFormState() {
     try {
         const saved = JSON.parse(localStorage.getItem(FORM_STATE_KEY));
@@ -116,7 +138,7 @@ function saveFormState(state) {
 }
 
 const LOCKS_KEY = 'ramps-locks';
-const LOCKABLE_IDS = ['stops', 'palette', 'spread', 'r', 'skewX', 'skewY', 'rotate', 'scaleX', 'scaleY', 'cx', 'cy', 'fx', 'fy', 'fr'];
+const LOCKABLE_IDS = ['stops', 'palette', 'type', 'spread', 'r', 'skewX', 'skewY', 'rotate', 'scaleX', 'scaleY', 'cx', 'cy', 'fx', 'fy', 'fr', 'startX', 'startY', 'endX', 'endY'];
 
 function loadLocks() {
     const defaults = Object.fromEntries(LOCKABLE_IDS.map((id) => [id, false]));
@@ -138,6 +160,10 @@ function setControlDisabled(id, disabled) {
     }
     if (id === 'spread') {
         document.querySelectorAll('input[name="spread"]').forEach((el) => { el.disabled = disabled; });
+        return;
+    }
+    if (id === 'type') {
+        document.querySelectorAll('input[name="gradient-type"]').forEach((el) => { el.disabled = disabled; });
         return;
     }
     const range = document.getElementById(id);
@@ -303,25 +329,53 @@ function handleDownloadSVG() {
     });
 }
 
+const PNG_BASE_SIZE = 2000;
+const PNG_SCALE_KEY = 'ramps-png-scale';
+
+function handlePngScale() {
+    const saved = localStorage.getItem(PNG_SCALE_KEY);
+    if (saved) {
+        const radio = document.querySelector(`input[name="png-scale"][value="${saved}"]`);
+        if (radio) radio.checked = true;
+    }
+    document.querySelectorAll('input[name="png-scale"]').forEach((item) => {
+        item.addEventListener('change', function () {
+            localStorage.setItem(PNG_SCALE_KEY, this.value);
+        });
+    });
+}
+
 function handleDownloadPNG() {
     const downloadPNGButton = document.getElementById('download-png');
     downloadPNGButton.addEventListener('click', function () {
+        const scale = Number(document.querySelector('input[name="png-scale"]:checked').value);
+        const size = PNG_BASE_SIZE * scale;
+
         const svg = document.getElementById('gradient-svg');
         const svgData = new XMLSerializer().serializeToString(svg);
         const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+
+        if (canvas.width !== size || canvas.height !== size) {
+            alert(`Your browser couldn't create a canvas at ${size}×${size}px. Try a smaller scale.`);
+            return;
+        }
+
         const ctx = canvas.getContext('2d');
         const img = new Image();
 
-        canvas.width = 2000;
-        canvas.height = 2000;
-
         img.onload = function () {
-            ctx.drawImage(img, 0, 0, 2000, 2000);
+            ctx.drawImage(img, 0, 0, size, size);
             canvas.toBlob(function (blob) {
+                if (!blob) {
+                    alert(`Rendering at ${size}×${size}px failed in this browser. Try a smaller scale.`);
+                    return;
+                }
                 const url = URL.createObjectURL(blob);
                 const downloadLink = document.createElement('a');
                 downloadLink.href = url;
-                downloadLink.download = `ramp-${getTimestamp()}.png`;
+                downloadLink.download = `ramp-${getTimestamp()}-${scale}x.png`;
                 document.body.appendChild(downloadLink);
                 downloadLink.click();
                 document.body.removeChild(downloadLink);
@@ -335,6 +389,7 @@ function handleDownloadPNG() {
 
 function collectFormState() {
     return {
+        type: document.querySelector('input[name="gradient-type"]:checked').value,
         spread: document.querySelector('input[name="spread"]:checked').value,
         skewX: Number(document.getElementById('skewX').value),
         skewY: Number(document.getElementById('skewY').value),
@@ -347,6 +402,10 @@ function collectFormState() {
         fx: Number(document.getElementById('fx').value),
         fy: Number(document.getElementById('fy').value),
         fr: Number(document.getElementById('fr').value),
+        startX: Number(document.getElementById('startX').value),
+        startY: Number(document.getElementById('startY').value),
+        endX: Number(document.getElementById('endX').value),
+        endY: Number(document.getElementById('endY').value),
     };
 }
 
@@ -362,6 +421,10 @@ function applyFormState(state, controls) {
     controls.rotate.set(state.rotate);
     controls.scaleX.set(state.scaleX);
     controls.scaleY.set(state.scaleY);
+    controls.startX.set(state.startX);
+    controls.startY.set(state.startY);
+    controls.endX.set(state.endX);
+    controls.endY.set(state.endY);
 
     const gradient = document.getElementById('radial-gradient');
     gradient.setAttribute('cx', `${state.cx}%`);
@@ -373,12 +436,23 @@ function applyFormState(state, controls) {
     gradient.setAttribute('spreadMethod', state.spread);
     updateGradientTransform();
 
+    const linearGradient = document.getElementById('linear-gradient');
+    linearGradient.setAttribute('x1', `${state.startX}%`);
+    linearGradient.setAttribute('y1', `${state.startY}%`);
+    linearGradient.setAttribute('x2', `${state.endX}%`);
+    linearGradient.setAttribute('y2', `${state.endY}%`);
+
     const radio = document.querySelector(`input[name="spread"][value="${state.spread}"]`);
     if (radio) radio.checked = true;
+
+    const typeRadio = document.querySelector(`input[name="gradient-type"][value="${state.type}"]`);
+    if (typeRadio) typeRadio.checked = true;
+    updateGradientVisibility(state.type);
 }
 
 function handleGradientControls() {
     const gradient = document.getElementById('radial-gradient');
+    const linearGradient = document.getElementById('linear-gradient');
 
     const controls = {
         cx: wireRangeControl('cx', (value) => { gradient.setAttribute('cx', `${value}%`); saveFormState(collectFormState()); }),
@@ -392,6 +466,10 @@ function handleGradientControls() {
         rotate: wireRangeControl('rotate', () => { updateGradientTransform(); saveFormState(collectFormState()); }),
         scaleX: wireRangeControl('scaleX', () => { updateGradientTransform(); saveFormState(collectFormState()); }),
         scaleY: wireRangeControl('scaleY', () => { updateGradientTransform(); saveFormState(collectFormState()); }),
+        startX: wireRangeControl('startX', (value) => { linearGradient.setAttribute('x1', `${value}%`); saveFormState(collectFormState()); }),
+        startY: wireRangeControl('startY', (value) => { linearGradient.setAttribute('y1', `${value}%`); saveFormState(collectFormState()); }),
+        endX: wireRangeControl('endX', (value) => { linearGradient.setAttribute('x2', `${value}%`); saveFormState(collectFormState()); }),
+        endY: wireRangeControl('endY', (value) => { linearGradient.setAttribute('y2', `${value}%`); saveFormState(collectFormState()); }),
     };
 
     const savedState = loadFormState();
@@ -418,6 +496,7 @@ function handleRandomiseSliders(controls) {
         const current = collectFormState();
         const spreadMethods = ['pad', 'reflect', 'repeat'];
         const randomState = {
+            type: current.type,
             spread: locks.spread ? current.spread : spreadMethods[Math.floor(Math.random() * spreadMethods.length)],
             skewX: locks.skewX ? current.skewX : Math.floor(Math.random() * 181) - 90,
             skewY: locks.skewY ? current.skewY : Math.floor(Math.random() * 181) - 90,
@@ -430,6 +509,10 @@ function handleRandomiseSliders(controls) {
             fx: locks.fx ? current.fx : Math.floor(Math.random() * 101),
             fy: locks.fy ? current.fy : Math.floor(Math.random() * 101),
             fr: locks.fr ? current.fr : Math.floor(Math.random() * 101),
+            startX: locks.startX ? current.startX : Math.floor(Math.random() * 101),
+            startY: locks.startY ? current.startY : Math.floor(Math.random() * 101),
+            endX: locks.endX ? current.endX : Math.floor(Math.random() * 101),
+            endY: locks.endY ? current.endY : Math.floor(Math.random() * 101),
         };
 
         applyFormState(randomState, controls);
@@ -442,7 +525,9 @@ window.onload = function () {
     handleRandomise();
     handleDownloadSVG();
     handleDownloadPNG();
+    handlePngScale();
     handleSpreadChange();
+    handleGradientType();
     handleStopsChange();
     const controls = handleGradientControls();
     handleResetSliders(controls);

@@ -42,6 +42,10 @@
     border-radius: var(--radius-base);
 }
 
+.group[hidden] {
+    display: none;
+}
+
 /* Label + value + control grid */
 
 .field-row {
