@@ -1,123 +1,223 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <!-- <link rel="stylesheet" href="css/tokens.css" />
-    <link rel="stylesheet" href="css/reset.css" />
-    <link rel="stylesheet" href="css/style.css" />
-    <link rel="stylesheet" href="css/layout.css" />
-    <link rel="stylesheet" href="css/type.css" />
-    <link rel="stylesheet" href="css/input.css" />
-    <link rel="stylesheet" href="css/feedback.css" />
-    <link rel="stylesheet" href="css/media.css" />
-    <link rel="stylesheet" href="css/utility.css" />
-    <link rel="stylesheet" href="css/special.css" /> -->
-    <style>
-        body {
-            display: flex;
-            justify-content: space-around;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            max-height: 100%;
-            margin: 0;
-            background: #eee;
-        }
-
-        main {
-            flex: 2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            max-height: 100%;
-        }
-
-        aside {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: left;
-            gap: 1rem;
-            padding: 2rem;
-            height: 100vh;
-            max-height: 100%;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramps</title>
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/type.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/input.css">
+    <link rel="stylesheet" href="css/feedback.css">
+    <link rel="stylesheet" href="css/special.css">
+    <link rel="stylesheet" href="css/media.css">
 </head>
 
 <body>
-    <main>
-        <svg id="gradient-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <radialGradient id="radial-gradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-                    <stop offset="0%" style="stop-color: red" />
-                    <stop offset="100%" style="stop-color: blue" />
-                </radialGradient>
-            </defs>
-            <circle id="background-circle" cx="100" cy="100" r="80" fill="#000000" />
-            <circle id="circle" cx="100" cy="100" r="80" fill="url(#radial-gradient)" />
-        </svg>
-    </main>
-    <aside>
-        <label>
-            Stops
-            <span id="stops-value"></span>
-            <input type="range" min="2" max="7" value="2" id="stops">
-        </label>
-        <div id="color-picker"></div>
-        <button id="randomise">Randomise Colors</button>
-        <button id="randomise-sliders">Randomise Sliders</button>
-        <button id="download-svg">Download SVG</button>
-        <button id="download-png">Download PNG</button>
-        <div>
-            <label>
-                <input type="radio" name="spread" value="pad"> Pad
-            </label>
-            <label>
-                <input type="radio" name="spread" value="reflect"> Reflect
-            </label>
-            <label>
-                <input type="radio" name="spread" value="repeat" checked> Repeat
-            </label>
+    <div class="app">
+        <div class="panel">
+            <header class="panel__header">
+                <h1>Ramps</h1>
+                <div class="button-row">
+                    <button id="download-svg" class="button button--primary" type="button">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                            <path d="M12 15V3" />
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <path d="m7 10 5 5 5-5" />
+                        </svg>
+                        Download as SVG
+                    </button>
+                    <button id="download-png" class="button" type="button">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                            <path d="M12 15V3" />
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <path d="m7 10 5 5 5-5" />
+                        </svg>
+                        Download as PNG
+                    </button>
+                </div>
+            </header>
+
+            <section class="panel__section" aria-label="Colour">
+                <!-- <h2 id="colour-heading">Colour</h2> -->
+                <div class="sliders">
+                    <div class="group">
+                        <div class="field-row">
+                            <label class="field-label" for="stops">Colours</label>
+                            <input class="value-input" type="number" id="stops-number" min="2" max="10" step="1"
+                                value="5" aria-label="Colours value">
+                            <div class="slider-wrap">
+                                <input class="slider" type="range" id="stops" min="2" max="10" step="1" value="5">
+                                <span class="slider-tooltip" id="stops-tooltip">5</span>
+                            </div>
+                        </div>
+                    </div>
+                    <fieldset class="group">
+                        <legend class="visually-hidden">Palette</legend>
+                        <div class="field-row field-row--wide">
+                            <span class="field-label">Palette</span>
+                            <div class="palette" id="color-picker"></div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="button-row">
+                    <button id="randomise" class="button" type="button">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                            <path d="m18 14 4 4-4 4" />
+                            <path d="m18 2 4 4-4 4" />
+                            <path d="M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-8.6a4 4 0 0 1 3.3-1.7H22" />
+                            <path d="M2 6h1.972a4 4 0 0 1 3.6 2.2" />
+                            <path d="M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45" />
+                        </svg>
+                        Randomise Palette
+                    </button>
+                </div>
+            </section>
+
+            <section class="panel__section" aria-label="Form">
+                <!-- <h2 id="form-heading">Form</h2> -->
+
+                <fieldset class="group">
+                    <legend class="visually-hidden">Spread</legend>
+                    <div class="field-row field-row--wide">
+                        <span class="field-label">Spread</span>
+                        <div class="radios">
+                            <label class="radio-option">
+                                <input type="radio" name="spread" value="pad">
+                                Pad
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="spread" value="reflect">
+                                Reflect
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="spread" value="repeat" checked>
+                                Repeat
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="sliders">
+                    <div class="group">
+                        <div class="field-row">
+                            <label class="field-label" for="r">Radius</label>
+                            <input class="value-input" type="number" id="r-number" min="0" max="100" step="1"
+                                value="50" aria-label="Radius value">
+                            <div class="slider-wrap">
+                                <input class="slider" type="range" id="r" min="0" max="100" step="1" value="50">
+                                <span class="slider-tooltip" id="r-tooltip">50</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="group">
+                        <div class="field-row">
+                            <label class="field-label" for="skewX">Shear X</label>
+                            <input class="value-input" type="number" id="skewX-number" min="-90" max="90" step="1"
+                                value="0" aria-label="Shear X value">
+                            <div class="slider-wrap">
+                                <input class="slider" type="range" id="skewX" min="-90" max="90" step="1" value="0">
+                                <span class="slider-tooltip" id="skewX-tooltip">0</span>
+                            </div>
+                        </div>
+                        <div class="field-row">
+                            <label class="field-label" for="skewY">Shear Y</label>
+                            <input class="value-input" type="number" id="skewY-number" min="-90" max="90" step="1"
+                                value="0" aria-label="Shear Y value">
+                            <div class="slider-wrap">
+                                <input class="slider" type="range" id="skewY" min="-90" max="90" step="1" value="0">
+                                <span class="slider-tooltip" id="skewY-tooltip">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="group">
+                        <div class="field-row">
+                            <label class="field-label" for="cx">Centre X</label>
+                            <input class="value-input" type="number" id="cx-number" min="0" max="100" step="1"
+                                value="50" aria-label="Centre X value">
+                            <div class="slider-wrap">
+                                <input class="slider" type="range" id="cx" min="0" max="100" step="1" value="50">
+                                <span class="slider-tooltip" id="cx-tooltip">50</span>
+                            </div>
+                        </div>
+                        <div class="field-row">
+                            <label class="field-label" for="cy">Centre Y</label>
+                            <input class="value-input" type="number" id="cy-number" min="0" max="100" step="1"
+                                value="50" aria-label="Centre Y value">
+                            <div class="slider-wrap">
+                                <input class="slider" type="range" id="cy" min="0" max="100" step="1" value="50">
+                                <span class="slider-tooltip" id="cy-tooltip">50</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="group">
+                        <div class="field-row">
+                            <label class="field-label" for="fx">Focus X</label>
+                            <input class="value-input" type="number" id="fx-number" min="0" max="100" step="1"
+                                value="50" aria-label="Focus X value">
+                            <div class="slider-wrap">
+                                <input class="slider" type="range" id="fx" min="0" max="100" step="1" value="50">
+                                <span class="slider-tooltip" id="fx-tooltip">50</span>
+                            </div>
+                        </div>
+                        <div class="field-row">
+                            <label class="field-label" for="fy">Focus Y</label>
+                            <input class="value-input" type="number" id="fy-number" min="0" max="100" step="1"
+                                value="50" aria-label="Focus Y value">
+                            <div class="slider-wrap">
+                                <input class="slider" type="range" id="fy" min="0" max="100" step="1" value="50">
+                                <span class="slider-tooltip" id="fy-tooltip">50</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-row">
+                    <button id="randomise-sliders" class="button" type="button">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                            <path d="m18 14 4 4-4 4" />
+                            <path d="m18 2 4 4-4 4" />
+                            <path d="M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-8.6a4 4 0 0 1 3.3-1.7H22" />
+                            <path d="M2 6h1.972a4 4 0 0 1 3.6 2.2" />
+                            <path d="M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45" />
+                        </svg>
+                        Randomise Sliders
+                    </button>
+                    <button id="reset-sliders" class="button" type="button">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                            <path d="M3 3v5h5" />
+                        </svg>
+                        Reset Sliders
+                    </button>
+                </div>
+            </section>
         </div>
-        <label>
-            Skew X
-            <span id="skewX-value"></span>
-            <input type="range" id="skewX" min="-90" max="90" step="1" value="0">
-        </label>
-        <label>
-            Skew Y
-            <span id="skewY-value"></span>
-            <input type="range" id="skewY" min="-90" max="90" step="1" value="0">
-        </label>
-        <label>
-            CX
-            <span id="cx-value"></span>
-            <input type="range" min="0" max="100" value="50" id="cx">
-        </label>
-        <label>
-            CY
-            <span id="cy-value"></span>
-            <input type="range" min="0" max="100" value="50" id="cy">
-        </label>
-        <label>
-            R
-            <span id="r-value"></span>
-            <input type="range" min="0" max="100" value="50" id="r">
-        </label>
-        <label>
-            FX
-            <span id="fx-value"></span>
-            <input type="range" min="0" max="100" value="50" id="fx">
-        </label>
-        <label>
-            FY
-            <span id="fy-value"></span>
-            <input type="range" min="0" max="100" value="50" id="fy">
-        </label>
-    </aside>
+
+        <div class="result">
+            <svg id="gradient-svg" class="result__shape" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <radialGradient id="radial-gradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%"
+                        spreadMethod="repeat">
+                        <stop offset="0%" style="stop-color: red" />
+                        <stop offset="100%" style="stop-color: blue" />
+                    </radialGradient>
+                </defs>
+                <circle id="background-circle" cx="100" cy="100" r="100" fill="#000000" />
+                <circle id="circle" cx="100" cy="100" r="100" fill="url(#radial-gradient)" />
+            </svg>
+        </div>
+    </div>
 
     <script src="ramps.js"></script>
 </body>
