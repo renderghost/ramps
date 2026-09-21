@@ -312,61 +312,51 @@ function handleRandomise() {
     });
 }
 
-const PNG_BASE_SIZE = 2000;
-const PNG_SCALE_KEY = 'ramps-png-scale';
+const PNG_PREVIEW_SIZE = 1000;
+const PNG_PRINT_SIZE = 10000;
 
-function handlePngScale() {
-    const saved = localStorage.getItem(PNG_SCALE_KEY);
-    if (saved) {
-        const radio = document.querySelector(`input[name="png-scale"][value="${saved}"]`);
-        if (radio) radio.checked = true;
+function downloadPng(size, suffix) {
+    const svg = document.getElementById('gradient-svg');
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+
+    if (canvas.width !== size || canvas.height !== size) {
+        alert(`Your browser couldn't create a canvas at ${size}×${size}px.`);
+        return;
     }
-    document.querySelectorAll('input[name="png-scale"]').forEach((item) => {
-        item.addEventListener('change', function () {
-            localStorage.setItem(PNG_SCALE_KEY, this.value);
+
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+
+    img.onload = function () {
+        ctx.drawImage(img, 0, 0, size, size);
+        canvas.toBlob(function (blob) {
+            if (!blob) {
+                alert(`Rendering at ${size}×${size}px failed in this browser.`);
+                return;
+            }
+            const url = URL.createObjectURL(blob);
+            const downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.download = `ramp-${getTimestamp()}${suffix}.png`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(url);
         });
-    });
+    };
+
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
 }
 
 function handleDownloadPNG() {
-    const downloadPNGButton = document.getElementById('download-png');
-    downloadPNGButton.addEventListener('click', function () {
-        const scale = Number(document.querySelector('input[name="png-scale"]:checked').value);
-        const size = PNG_BASE_SIZE * scale;
-
-        const svg = document.getElementById('gradient-svg');
-        const svgData = new XMLSerializer().serializeToString(svg);
-        const canvas = document.createElement('canvas');
-        canvas.width = size;
-        canvas.height = size;
-
-        if (canvas.width !== size || canvas.height !== size) {
-            alert(`Your browser couldn't create a canvas at ${size}×${size}px. Try a smaller scale.`);
-            return;
-        }
-
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
-
-        img.onload = function () {
-            ctx.drawImage(img, 0, 0, size, size);
-            canvas.toBlob(function (blob) {
-                if (!blob) {
-                    alert(`Rendering at ${size}×${size}px failed in this browser. Try a smaller scale.`);
-                    return;
-                }
-                const url = URL.createObjectURL(blob);
-                const downloadLink = document.createElement('a');
-                downloadLink.href = url;
-                downloadLink.download = `ramp-${getTimestamp()}-${scale}x.png`;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
-                URL.revokeObjectURL(url);
-            });
-        };
-
-        img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+    document.getElementById('download-png-preview').addEventListener('click', function () {
+        downloadPng(PNG_PREVIEW_SIZE, '-preview');
+    });
+    document.getElementById('download-png-print').addEventListener('click', function () {
+        downloadPng(PNG_PRINT_SIZE, '-print');
     });
 }
 
@@ -507,7 +497,6 @@ window.onload = function () {
     initialize();
     handleRandomise();
     handleDownloadPNG();
-    handlePngScale();
     handleSpreadChange();
     handleGradientType();
     handleStopsChange();

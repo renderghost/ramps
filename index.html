@@ -21,40 +21,25 @@
             <header class="panel__header">
                 <h1>Ramps</h1>
                 <div class="button-row">
-                    <button id="download-png" class="button" type="button">
+                    <button id="download-png-preview" class="button" type="button">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                             <path d="M12 15V3" />
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                             <path d="m7 10 5 5 5-5" />
                         </svg>
-                        Download as PNG
+                        Preview Quality
+                    </button>
+                    <button id="download-png-print" class="button" type="button">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                            <path d="M12 15V3" />
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <path d="m7 10 5 5 5-5" />
+                        </svg>
+                        Print Quality
                     </button>
                 </div>
-                <fieldset class="group">
-                    <legend class="visually-hidden">PNG Scale</legend>
-                    <div class="field-row field-row--wide">
-                        <span class="field-label">PNG Scale</span>
-                        <div class="radios">
-                            <label class="radio-option">
-                                <input type="radio" name="png-scale" value="1" checked>
-                                1&times;
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="png-scale" value="2">
-                                2&times;
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="png-scale" value="4">
-                                4&times;
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="png-scale" value="8">
-                                8&times;
-                            </label>
-                        </div>
-                    </div>
-                </fieldset>
             </header>
 
             <section class="panel__section" aria-label="Colour">
