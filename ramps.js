@@ -200,8 +200,12 @@ function updateBackgroundColor(color) {
     }
 }
 
+const STOPS_KEY = 'ramps-stops';
+
 function initialize() {
-    const stops = document.getElementById("stops").value;
+    const stops = Number(localStorage.getItem(STOPS_KEY)) || Number(document.getElementById("stops").value);
+    document.getElementById("stops").value = stops;
+    document.getElementById("stops-number").value = stops;
 
     for (let i = 0; i < stops; i++) {
         if (!localStorage.getItem(`color-${i}`)) {
@@ -269,6 +273,7 @@ function handleColorChange(index) {
 
 function handleStopsChange() {
     wireRangeControl('stops', function (stops) {
+        localStorage.setItem(STOPS_KEY, stops);
         createSVGStops(stops);
         createColorPickers(stops);
         attachColorChangeHandlers(stops);
@@ -529,6 +534,7 @@ function collectSavedState() {
 function applySavedState(saved, controls) {
     document.getElementById('stops').value = saved.colours;
     document.getElementById('stops-number').value = saved.colours;
+    localStorage.setItem(STOPS_KEY, saved.colours);
     saved.palette.forEach((color, i) => {
         localStorage.setItem(`color-${i}`, color);
     });
