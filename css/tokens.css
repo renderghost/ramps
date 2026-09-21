@@ -25,6 +25,7 @@
 :root {
     --space-0: 0;
     --space-px: 1px;
+    --space-2xs: 2px;
     --space-xs: 4px;
     --space-sm: 8px;
     --space-base: 16px;

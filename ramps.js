@@ -493,6 +493,19 @@ function handleRandomiseSliders(controls) {
     });
 }
 
+function handleTabs() {
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach((tab) => {
+        tab.addEventListener('click', function () {
+            tabs.forEach((t) => {
+                const selected = t === tab;
+                t.setAttribute('aria-selected', String(selected));
+                document.getElementById(`panel-${t.dataset.tab}`).hidden = !selected;
+            });
+        });
+    });
+}
+
 window.onload = function () {
     initialize();
     handleRandomise();
@@ -504,4 +517,5 @@ window.onload = function () {
     handleResetSliders(controls);
     handleRandomiseSliders(controls);
     handleLocks();
+    handleTabs();
 };

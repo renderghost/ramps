@@ -244,3 +244,29 @@
 .palette input[type="color"]::-webkit-color-swatch {
     border: none;
 }
+
+/* Tabs */
+
+.tabs {
+    display: inline-flex;
+    gap: var(--space-2xs);
+    padding: var(--space-xs);
+    background: var(--color-tint);
+    border-radius: var(--radius-base);
+}
+
+.tab {
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid transparent;
+    border-radius: var(--radius-soft);
+    background: transparent;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text);
+}
+
+.tab[aria-selected="true"] {
+    background: var(--color-surface);
+    border-color: var(--color-border);
+}

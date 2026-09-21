@@ -32,3 +32,9 @@ h2 {
     line-height: var(--line-height-base);
     font-weight: var(--font-weight-medium);
 }
+
+.panel__title {
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-md);
+    font-weight: var(--font-weight-bold);
+}

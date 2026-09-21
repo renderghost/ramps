@@ -54,3 +54,28 @@
     container-type: size;
     overflow: hidden;
 }
+
+.header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+.header-row__group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+.tab-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-base);
+}
+
+.tab-panel[hidden] {
+    display: none;
+}
