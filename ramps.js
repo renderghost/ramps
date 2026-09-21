@@ -493,6 +493,122 @@ function handleRandomiseSliders(controls) {
     });
 }
 
+const SAVED_STATES_KEY = 'ramps-saved-states';
+
+function collectSavedState() {
+    const formState = collectFormState();
+    const stops = Number(document.getElementById('stops').value);
+    const palette = [];
+    for (let i = 0; i < stops; i++) {
+        palette.push(localStorage.getItem(`color-${i}`));
+    }
+
+    return {
+        colours: stops,
+        palette,
+        type: formState.type,
+        spread: formState.spread,
+        radius: formState.r,
+        shearX: formState.skewX,
+        shearY: formState.skewY,
+        rotation: formState.rotate,
+        scaleX: formState.scaleX,
+        scaleY: formState.scaleY,
+        centreX: formState.cx,
+        centreY: formState.cy,
+        focusX: formState.fx,
+        focusY: formState.fy,
+        focalRadius: formState.fr,
+        startX: formState.startX,
+        startY: formState.startY,
+        endX: formState.endX,
+        endY: formState.endY,
+    };
+}
+
+function applySavedState(saved, controls) {
+    document.getElementById('stops').value = saved.colours;
+    document.getElementById('stops-number').value = saved.colours;
+    saved.palette.forEach((color, i) => {
+        localStorage.setItem(`color-${i}`, color);
+    });
+    createSVGStops(saved.colours);
+    createColorPickers(saved.colours);
+    attachColorChangeHandlers(saved.colours);
+    updateFillVar(document.getElementById('stops'));
+
+    const formState = {
+        type: saved.type,
+        spread: saved.spread,
+        r: saved.radius,
+        skewX: saved.shearX,
+        skewY: saved.shearY,
+        rotate: saved.rotation,
+        scaleX: saved.scaleX,
+        scaleY: saved.scaleY,
+        cx: saved.centreX,
+        cy: saved.centreY,
+        fx: saved.focusX,
+        fy: saved.focusY,
+        fr: saved.focalRadius,
+        startX: saved.startX,
+        startY: saved.startY,
+        endX: saved.endX,
+        endY: saved.endY,
+    };
+    applyFormState(formState, controls);
+    saveFormState(formState);
+}
+
+function loadSavedStates() {
+    try {
+        const saved = JSON.parse(localStorage.getItem(SAVED_STATES_KEY));
+        return Array.isArray(saved) ? saved : [];
+    } catch {
+        return [];
+    }
+}
+
+function persistSavedStates(states) {
+    localStorage.setItem(SAVED_STATES_KEY, JSON.stringify(states));
+}
+
+function renderSavedList(controls) {
+    const list = document.getElementById('saved-list');
+    const states = loadSavedStates();
+
+    if (states.length === 0) {
+        list.innerHTML = '<p class="saved-list__empty">No saved states yet.</p>';
+        return;
+    }
+
+    list.innerHTML = '';
+    states.forEach((entry, index) => {
+        const item = document.createElement('div');
+        item.className = 'saved-list__item';
+
+        const link = document.createElement('button');
+        link.type = 'button';
+        link.className = 'saved-list__link';
+        link.textContent = entry.timestamp;
+        link.addEventListener('click', function () {
+            applySavedState(entry.state, controls);
+        });
+
+        item.appendChild(link);
+        list.appendChild(item);
+    });
+}
+
+function handleSaveState(controls) {
+    document.getElementById('save-state').addEventListener('click', function () {
+        const states = loadSavedStates();
+        states.unshift({ timestamp: getTimestamp(), state: collectSavedState() });
+        persistSavedStates(states);
+        renderSavedList(controls);
+    });
+}
+
 function handleTabs() {
     const tabs = document.querySelectorAll('.tab');
     tabs.forEach((tab) => {
@@ -518,4 +634,6 @@ window.onload = function () {
     handleRandomiseSliders(controls);
     handleLocks();
     handleTabs();
+    handleSaveState(controls);
+    renderSavedList(controls);
 };
