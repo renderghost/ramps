@@ -642,6 +642,15 @@ function handleTabs() {
     });
 }
 
+function handleCopyData() {
+    document.getElementById('copy-data').addEventListener('click', function () {
+        const data = JSON.stringify(collectSavedState());
+        navigator.clipboard.writeText(data).catch(() => {
+            alert('Could not copy to clipboard.');
+        });
+    });
+}
+
 window.onload = function () {
     initialize();
     handleRandomise();
@@ -656,4 +665,5 @@ window.onload = function () {
     handleTabs();
     handleSaveState(controls);
     renderSavedList(controls);
+    handleCopyData();
 };
