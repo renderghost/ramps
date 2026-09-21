@@ -52,6 +52,8 @@
     --white: #ffffff;
     --whitesmoke: #f5f5f5;
     --blue: #130df2;
+    --magenta: #fc226a;
+    --magenta-a16: rgba(252, 34, 106, 0.16);
 }
 
 /* Colour — applied */
@@ -64,4 +66,6 @@
     --color-border-strong: var(--black-a24);
     --color-tint: var(--black-a06);
     --color-accent: var(--blue);
+    --color-danger: var(--magenta);
+    --color-danger-border: var(--magenta-a16);
 }

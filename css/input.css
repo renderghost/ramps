@@ -281,3 +281,25 @@
     color: var(--color-text);
     font: inherit;
 }
+
+.saved-list__delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    flex-shrink: 0;
+    border: 1px solid var(--color-danger-border);
+    border-radius: var(--radius-base);
+    color: var(--color-danger);
+}
+
+.saved-list__delete:hover {
+    background: var(--color-danger-border);
+}
+
+.saved-list__delete svg {
+    width: 16px;
+    height: 16px;
+}

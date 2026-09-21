@@ -601,7 +601,21 @@ function renderSavedList(controls) {
             applySavedState(entry.state, controls);
         });
 
+        const deleteButton = document.createElement('button');
+        deleteButton.type = 'button';
+        deleteButton.className = 'saved-list__delete';
+        deleteButton.setAttribute('aria-label', `Delete saved state ${entry.timestamp}`);
+        deleteButton.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>';
+        deleteButton.addEventListener('click', function () {
+            if (!confirm('Are you sure?')) return;
+            const remaining = loadSavedStates();
+            remaining.splice(index, 1);
+            persistSavedStates(remaining);
+            renderSavedList(controls);
+        });
+
         item.appendChild(link);
+        item.appendChild(deleteButton);
         list.appendChild(item);
     });
 }
