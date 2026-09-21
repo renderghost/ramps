@@ -349,6 +349,7 @@ git commit -m "feat: replace PNG scale controls with Print/Preview quality butto
 
 ```html
             <header class="panel__header">
+                <h1>Ramps</h1>
                 <div class="button-row">
                     <button id="download-png-preview" class="button" type="button">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
