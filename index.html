@@ -19,53 +19,57 @@
     <div class="app">
         <div class="panel">
             <header class="panel__header">
-                <h1>Ramps</h1>
-                <div class="button-row">
-                    <button id="download-svg" class="button button--primary" type="button">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                            <path d="M12 15V3" />
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                            <path d="m7 10 5 5 5-5" />
-                        </svg>
-                        Download as SVG
-                    </button>
-                    <button id="download-png" class="button" type="button">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                            <path d="M12 15V3" />
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                            <path d="m7 10 5 5 5-5" />
-                        </svg>
-                        Download as PNG
-                    </button>
-                </div>
-                <fieldset class="group">
-                    <legend class="visually-hidden">PNG Scale</legend>
-                    <div class="field-row field-row--wide">
-                        <span class="field-label">PNG Scale</span>
-                        <div class="radios">
-                            <label class="radio-option">
-                                <input type="radio" name="png-scale" value="1" checked>
-                                1&times;
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="png-scale" value="2">
-                                2&times;
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="png-scale" value="4">
-                                4&times;
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="png-scale" value="8">
-                                8&times;
-                            </label>
-                        </div>
+                <div class="header-row">
+                    <div class="header-row__group">
+                        <h1 class="panel__title">Ramps</h1>
+                        <button id="save-state" class="button button--primary" type="button">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+                                <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" />
+                                <path d="M7 3v4a1 1 0 0 0 1 1h7" />
+                            </svg>
+                            Save State
+                        </button>
                     </div>
-                </fieldset>
+                    <div class="header-row__group">
+                        <button id="copy-data" class="button" type="button">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                            </svg>
+                            Copy Data
+                        </button>
+                        <button id="download-png-preview" class="button" type="button">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                <path d="M12 15V3" />
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <path d="m7 10 5 5 5-5" />
+                            </svg>
+                            Preview Quality
+                        </button>
+                        <button id="download-png-print" class="button" type="button">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                <path d="M12 15V3" />
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <path d="m7 10 5 5 5-5" />
+                            </svg>
+                            Print Quality
+                        </button>
+                    </div>
+                </div>
+                <div class="tabs" role="tablist">
+                    <button class="tab" type="button" role="tab" id="tab-controls" data-tab="controls"
+                        aria-selected="true" aria-controls="panel-controls">Controls</button>
+                    <button class="tab" type="button" role="tab" id="tab-saved" data-tab="saved"
+                        aria-selected="false" aria-controls="panel-saved">Saved</button>
+                </div>
             </header>
 
+            <div class="tab-panel" id="panel-controls" role="tabpanel" aria-labelledby="tab-controls">
             <section class="panel__section" aria-label="Colour">
                 <!-- <h2 id="colour-heading">Colour</h2> -->
                 <div class="sliders">
@@ -609,6 +613,11 @@
                     </button>
                 </div>
             </section>
+            </div>
+
+            <div class="tab-panel" id="panel-saved" role="tabpanel" aria-labelledby="tab-saved" hidden>
+                <div class="saved-list" id="saved-list"></div>
+            </div>
         </div>
 
         <div class="result">

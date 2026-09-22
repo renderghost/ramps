@@ -200,8 +200,12 @@ function updateBackgroundColor(color) {
     }
 }
 
+const STOPS_KEY = 'ramps-stops';
+
 function initialize() {
-    const stops = document.getElementById("stops").value;
+    const stops = Number(localStorage.getItem(STOPS_KEY)) || Number(document.getElementById("stops").value);
+    document.getElementById("stops").value = stops;
+    document.getElementById("stops-number").value = stops;
 
     for (let i = 0; i < stops; i++) {
         if (!localStorage.getItem(`color-${i}`)) {
@@ -269,6 +273,7 @@ function handleColorChange(index) {
 
 function handleStopsChange() {
     wireRangeControl('stops', function (stops) {
+        localStorage.setItem(STOPS_KEY, stops);
         createSVGStops(stops);
         createColorPickers(stops);
         attachColorChangeHandlers(stops);
@@ -312,78 +317,51 @@ function handleRandomise() {
     });
 }
 
-function handleDownloadSVG() {
-    const downloadSVGButton = document.getElementById('download-svg');
-    downloadSVGButton.addEventListener('click', function () {
-        const svg = document.getElementById('gradient-svg');
-        const svgData = new XMLSerializer().serializeToString(svg);
-        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-        const svgUrl = URL.createObjectURL(svgBlob);
-        const downloadLink = document.createElement('a');
-        downloadLink.href = svgUrl;
-        downloadLink.download = `ramp-${getTimestamp()}.svg`;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-        URL.revokeObjectURL(svgUrl);
-    });
-}
+const PNG_PREVIEW_SIZE = 1000;
+const PNG_PRINT_SIZE = 10000;
 
-const PNG_BASE_SIZE = 2000;
-const PNG_SCALE_KEY = 'ramps-png-scale';
+function downloadPng(size, suffix) {
+    const svg = document.getElementById('gradient-svg');
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
 
-function handlePngScale() {
-    const saved = localStorage.getItem(PNG_SCALE_KEY);
-    if (saved) {
-        const radio = document.querySelector(`input[name="png-scale"][value="${saved}"]`);
-        if (radio) radio.checked = true;
+    if (canvas.width !== size || canvas.height !== size) {
+        alert(`Your browser couldn't create a canvas at ${size}×${size}px. Try Preview Quality instead.`);
+        return;
     }
-    document.querySelectorAll('input[name="png-scale"]').forEach((item) => {
-        item.addEventListener('change', function () {
-            localStorage.setItem(PNG_SCALE_KEY, this.value);
+
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+
+    img.onload = function () {
+        ctx.drawImage(img, 0, 0, size, size);
+        canvas.toBlob(function (blob) {
+            if (!blob) {
+                alert(`Rendering at ${size}×${size}px failed in this browser. Try Preview Quality instead.`);
+                return;
+            }
+            const url = URL.createObjectURL(blob);
+            const downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.download = `ramp-${getTimestamp()}${suffix}.png`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(url);
         });
-    });
+    };
+
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
 }
 
 function handleDownloadPNG() {
-    const downloadPNGButton = document.getElementById('download-png');
-    downloadPNGButton.addEventListener('click', function () {
-        const scale = Number(document.querySelector('input[name="png-scale"]:checked').value);
-        const size = PNG_BASE_SIZE * scale;
-
-        const svg = document.getElementById('gradient-svg');
-        const svgData = new XMLSerializer().serializeToString(svg);
-        const canvas = document.createElement('canvas');
-        canvas.width = size;
-        canvas.height = size;
-
-        if (canvas.width !== size || canvas.height !== size) {
-            alert(`Your browser couldn't create a canvas at ${size}×${size}px. Try a smaller scale.`);
-            return;
-        }
-
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
-
-        img.onload = function () {
-            ctx.drawImage(img, 0, 0, size, size);
-            canvas.toBlob(function (blob) {
-                if (!blob) {
-                    alert(`Rendering at ${size}×${size}px failed in this browser. Try a smaller scale.`);
-                    return;
-                }
-                const url = URL.createObjectURL(blob);
-                const downloadLink = document.createElement('a');
-                downloadLink.href = url;
-                downloadLink.download = `ramp-${getTimestamp()}-${scale}x.png`;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
-                URL.revokeObjectURL(url);
-            });
-        };
-
-        img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+    document.getElementById('download-png-preview').addEventListener('click', function () {
+        downloadPng(PNG_PREVIEW_SIZE, '-preview');
+    });
+    document.getElementById('download-png-print').addEventListener('click', function () {
+        downloadPng(PNG_PRINT_SIZE, '-print');
     });
 }
 
@@ -520,12 +498,167 @@ function handleRandomiseSliders(controls) {
     });
 }
 
+const SAVED_STATES_KEY = 'ramps-saved-states';
+
+function collectSavedState() {
+    const formState = collectFormState();
+    const stops = Number(document.getElementById('stops').value);
+    const palette = [];
+    for (let i = 0; i < stops; i++) {
+        palette.push(localStorage.getItem(`color-${i}`));
+    }
+
+    return {
+        colours: stops,
+        palette,
+        type: formState.type,
+        spread: formState.spread,
+        radius: formState.r,
+        shearX: formState.skewX,
+        shearY: formState.skewY,
+        rotation: formState.rotate,
+        scaleX: formState.scaleX,
+        scaleY: formState.scaleY,
+        centreX: formState.cx,
+        centreY: formState.cy,
+        focusX: formState.fx,
+        focusY: formState.fy,
+        focalRadius: formState.fr,
+        startX: formState.startX,
+        startY: formState.startY,
+        endX: formState.endX,
+        endY: formState.endY,
+    };
+}
+
+function applySavedState(saved, controls) {
+    document.getElementById('stops').value = saved.colours;
+    document.getElementById('stops-number').value = saved.colours;
+    localStorage.setItem(STOPS_KEY, saved.colours);
+    saved.palette.forEach((color, i) => {
+        localStorage.setItem(`color-${i}`, color);
+    });
+    createSVGStops(saved.colours);
+    createColorPickers(saved.colours);
+    attachColorChangeHandlers(saved.colours);
+    updateFillVar(document.getElementById('stops'));
+
+    const formState = {
+        type: saved.type,
+        spread: saved.spread,
+        r: saved.radius,
+        skewX: saved.shearX,
+        skewY: saved.shearY,
+        rotate: saved.rotation,
+        scaleX: saved.scaleX,
+        scaleY: saved.scaleY,
+        cx: saved.centreX,
+        cy: saved.centreY,
+        fx: saved.focusX,
+        fy: saved.focusY,
+        fr: saved.focalRadius,
+        startX: saved.startX,
+        startY: saved.startY,
+        endX: saved.endX,
+        endY: saved.endY,
+    };
+    applyFormState(formState, controls);
+    saveFormState(formState);
+}
+
+function loadSavedStates() {
+    try {
+        const saved = JSON.parse(localStorage.getItem(SAVED_STATES_KEY));
+        return Array.isArray(saved) ? saved : [];
+    } catch {
+        return [];
+    }
+}
+
+function persistSavedStates(states) {
+    localStorage.setItem(SAVED_STATES_KEY, JSON.stringify(states));
+}
+
+function renderSavedList(controls) {
+    const list = document.getElementById('saved-list');
+    const states = loadSavedStates();
+
+    if (states.length === 0) {
+        list.innerHTML = '<p class="saved-list__empty">No saved states yet.</p>';
+        return;
+    }
+
+    list.innerHTML = '';
+    states.forEach((entry, index) => {
+        const item = document.createElement('div');
+        item.className = 'saved-list__item';
+
+        const link = document.createElement('button');
+        link.type = 'button';
+        link.className = 'saved-list__link';
+        link.textContent = entry.timestamp;
+        link.addEventListener('click', function () {
+            applySavedState(entry.state, controls);
+        });
+
+        const deleteButton = document.createElement('button');
+        deleteButton.type = 'button';
+        deleteButton.className = 'saved-list__delete';
+        deleteButton.setAttribute('aria-label', `Delete saved state ${entry.timestamp}`);
+        deleteButton.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>';
+        deleteButton.addEventListener('click', function () {
+            if (!confirm('Are you sure?')) return;
+            const remaining = loadSavedStates();
+            remaining.splice(index, 1);
+            persistSavedStates(remaining);
+            renderSavedList(controls);
+        });
+
+        item.appendChild(link);
+        item.appendChild(deleteButton);
+        list.appendChild(item);
+    });
+}
+
+function handleSaveState(controls) {
+    document.getElementById('save-state').addEventListener('click', function () {
+        const states = loadSavedStates();
+        states.unshift({ timestamp: getTimestamp(), state: collectSavedState() });
+        persistSavedStates(states);
+        renderSavedList(controls);
+    });
+}
+
+function handleTabs() {
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach((tab) => {
+        tab.addEventListener('click', function () {
+            tabs.forEach((t) => {
+                const selected = t === tab;
+                t.setAttribute('aria-selected', String(selected));
+                document.getElementById(`panel-${t.dataset.tab}`).hidden = !selected;
+            });
+        });
+    });
+}
+
+function handleCopyData() {
+    document.getElementById('copy-data').addEventListener('click', function () {
+        if (!navigator.clipboard) {
+            alert('Clipboard access needs a secure (https) context.');
+            return;
+        }
+        const data = JSON.stringify(collectSavedState());
+        navigator.clipboard.writeText(data).catch(() => {
+            alert('Could not copy to clipboard.');
+        });
+    });
+}
+
 window.onload = function () {
     initialize();
     handleRandomise();
-    handleDownloadSVG();
     handleDownloadPNG();
-    handlePngScale();
     handleSpreadChange();
     handleGradientType();
     handleStopsChange();
@@ -533,4 +666,8 @@ window.onload = function () {
     handleResetSliders(controls);
     handleRandomiseSliders(controls);
     handleLocks();
+    handleTabs();
+    handleSaveState(controls);
+    renderSavedList(controls);
+    handleCopyData();
 };
