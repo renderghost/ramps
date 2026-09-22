@@ -328,7 +328,7 @@ function downloadPng(size, suffix) {
     canvas.height = size;
 
     if (canvas.width !== size || canvas.height !== size) {
-        alert(`Your browser couldn't create a canvas at ${size}×${size}px.`);
+        alert(`Your browser couldn't create a canvas at ${size}×${size}px. Try Preview Quality instead.`);
         return;
     }
 
@@ -339,7 +339,7 @@ function downloadPng(size, suffix) {
         ctx.drawImage(img, 0, 0, size, size);
         canvas.toBlob(function (blob) {
             if (!blob) {
-                alert(`Rendering at ${size}×${size}px failed in this browser.`);
+                alert(`Rendering at ${size}×${size}px failed in this browser. Try Preview Quality instead.`);
                 return;
             }
             const url = URL.createObjectURL(blob);
@@ -644,6 +644,10 @@ function handleTabs() {
 
 function handleCopyData() {
     document.getElementById('copy-data').addEventListener('click', function () {
+        if (!navigator.clipboard) {
+            alert('Clipboard access needs a secure (https) context.');
+            return;
+        }
         const data = JSON.stringify(collectSavedState());
         navigator.clipboard.writeText(data).catch(() => {
             alert('Could not copy to clipboard.');
